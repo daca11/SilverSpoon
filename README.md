@@ -112,6 +112,22 @@ For servers or automation:
    ```
 *(Files are downloaded to the current working directory. The CLI handles the browser-solved hosts: FuckingFast, DataNodes and BZZHR. FileKeeper, plain direct links, multi-connection downloads and extraction are GUI-only.)*
 
+## Run with Docker (web UI)
+
+The same downloader runs headless in a container with a browser UI, which suits a NAS or home server:
+
+```bash
+mkdir -p downloads data
+PUID=$(id -u) PGID=$(id -g) TZ=Europe/Amsterdam docker compose up -d --build
+```
+
+Open <http://localhost:8080>. Paste links, add them to the queue and manage them as in the desktop app (Auto-Extract, pause/resume, scheduler, settings).
+
+* `./downloads` holds the downloaded and extracted files; `./data` holds your settings and queue history. `PUID`/`PGID` should match the owner of both folders; `TZ` sets the time zone the download scheduler uses.
+* **CAPTCHAs:** the solver's Chromium runs on a virtual display inside the container. When a check needs a click, the page shows a **Solve now** banner that opens the browser view (noVNC, port 6080). You can also open `http://localhost:6080/vnc.html` yourself.
+* The web UI has **no login**, and neither does the browser view on port 6080. Keep both ports on a trusted network or put an authenticating reverse proxy in front of them. Do not expose them to the internet.
+* The auto-updater, Windows wake timer and "Open Folder" are desktop-only and not part of the web UI.
+
 ## Building the Windows executable
 
 Run `build_exe.bat` (needs `pyinstaller` and a Playwright Chromium under `%LOCALAPPDATA%\ms-playwright`); the distributable folder lands in `dist\SilverSpoon`. Pushing a `v*.*.*` tag runs the same build on GitHub Actions and attaches `SilverSpoon-windows.zip` to the release.
