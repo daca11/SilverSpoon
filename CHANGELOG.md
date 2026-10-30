@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixes & Improvements
 * **Shared download engine**: The queue, workers, extraction and scheduler moved out of the Qt window into `engine.py`, which the desktop app and the web app both use. The desktop app behaves as before. `SILVERSPOON_DATA_DIR` and `SILVERSPOON_DOWNLOAD_DIR` move the state files and the default save folder.
+* **Docker image publishing**: publishing a GitHub release builds the web image (amd64 and arm64) and pushes it to `ghcr.io/billysams21/silverspoon` as `<version>`, `<major>.<minor>` and `latest`.
 
 ## [v1.6.0] - 2026-10-17
 

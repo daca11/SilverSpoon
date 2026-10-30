@@ -119,7 +119,7 @@ The same downloader runs headless in a container with a browser UI, which suits 
 ```yaml
 services:
   silverspoon:
-    image: ghcr.io/daca11/silverspoon:latest
+    image: ghcr.io/billysams21/silverspoon:latest
     container_name: silverspoon
     restart: unless-stopped
     # Match the owner of ./downloads and ./data (`id -u` / `id -g`).
