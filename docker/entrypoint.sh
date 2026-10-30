@@ -16,9 +16,13 @@ case "$PUID$PGID" in
   *[!0-9]*) echo "PUID and PGID must be numeric (got '$PUID' / '$PGID')" >&2; exit 1 ;;
 esac
 
-# PUID=0 means "run as root": no remap or chown needed, PGID is ignored.
+# PUID=0 means "run as root": no user remap or chown needed. A non-zero PGID
+# still sets the group the process runs with.
 if [ "$PUID" = "0" ]; then
-  echo "Starting SilverSpoon as root (PUID=0)"
+  echo "Starting SilverSpoon as uid=0 gid=$PGID"
+  if [ "$PGID" != "0" ]; then
+    exec setpriv --regid "$PGID" --clear-groups "$@"
+  fi
   exec "$@"
 fi
 
