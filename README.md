@@ -122,8 +122,6 @@ services:
     image: ghcr.io/billysams21/silverspoon:latest
     container_name: silverspoon
     restart: unless-stopped
-    # Match the owner of ./downloads and ./data (`id -u` / `id -g`).
-    user: "${PUID:-1000}:${PGID:-1000}"
     ports:
       - "8080:8080"   # web UI
       - "6080:6080"   # CAPTCHA browser view (noVNC); the UI opens it when a check needs you
@@ -131,15 +129,16 @@ services:
       - ./downloads:/downloads
       - ./data:/data   # settings and queue history
     environment:
-      TZ: ${TZ:-UTC}   # the download scheduler uses the container's local time
+      PUID: 1000   # user and group the app runs as; set to the owner of the folders (`id -u` / `id -g`)
+      PGID: 1000
+      TZ: UTC      # the download scheduler uses this time zone, e.g. Europe/Amsterdam
     shm_size: 1gb      # Chromium needs more than Docker's 64 MB default
 ```
 
-Then start it:
+Then start it. Docker creates the `downloads` and `data` folders next to the file:
 
 ```bash
-mkdir -p downloads data
-PUID=$(id -u) PGID=$(id -g) TZ=Europe/Amsterdam docker compose up -d
+docker compose up -d
 ```
 
 To build the image from a checkout instead of pulling it, use the `docker-compose.yml` in the repository and run `docker compose up -d --build`.
