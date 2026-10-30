@@ -125,7 +125,7 @@ Or pull the prebuilt multi-arch image instead of building it: `docker run -d -p 
 
 Open <http://localhost:8080>. Paste links, add them to the queue and manage them as in the desktop app (Auto-Extract, pause/resume, scheduler, settings).
 
-* `./downloads` holds the downloaded and extracted files; `./data` holds your settings and queue history. `PUID`/`PGID` (default 1000, as in linuxserver.io images) set the user the app runs as and should match the owner of both folders; the container fixes ownership of `./data` on start. `TZ` sets the time zone the download scheduler uses.
+* `./downloads` holds the downloaded and extracted files; `./data` holds your settings and queue history. `PUID`/`PGID` (default 1000, as in linuxserver.io images) set the user the app runs as and should match the owner of both folders; the container fixes ownership of `./data` on start. `PUID=0` runs it as root (`PGID` is then ignored). `TZ` sets the time zone the download scheduler uses.
 * **CAPTCHAs:** the solver's Chromium runs on a virtual display inside the container. When a check needs a click, the page shows a **Solve now** banner that opens the browser view (noVNC, port 6080). You can also open `http://localhost:6080/vnc.html` yourself.
 * The web UI has **no login**, and neither does the browser view on port 6080. Keep both ports on a trusted network or put an authenticating reverse proxy in front of them. Do not expose them to the internet.
 * The auto-updater, Windows wake timer and "Open Folder" are desktop-only and not part of the web UI.

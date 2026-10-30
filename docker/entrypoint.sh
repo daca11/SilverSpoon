@@ -16,9 +16,10 @@ case "$PUID$PGID" in
   *[!0-9]*) echo "PUID and PGID must be numeric (got '$PUID' / '$PGID')" >&2; exit 1 ;;
 esac
 
-if [ "$PUID" = "0" ] || [ "$PGID" = "0" ]; then
-  echo "PUID/PGID 0 (root) is not supported; pick an unprivileged id" >&2
-  exit 1
+# PUID=0 means "run as root": no remap or chown needed, PGID is ignored.
+if [ "$PUID" = "0" ]; then
+  echo "Starting SilverSpoon as root (PUID=0)"
+  exec "$@"
 fi
 
 # -o allows ids that already exist in the image (e.g. 33 = www-data)
