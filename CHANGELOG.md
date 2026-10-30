@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 * **Web UI and Docker**: SilverSpoon runs as a web app in a container (`docker compose up -d`, then open `http://localhost:8080`). The browser UI covers the queue, batch folders, pause/resume/retry, extraction, settings, the download scheduler and a live speed graph. Queue, settings and downloads live in the `./data` and `./downloads` volumes, so they survive restarts. When a Cloudflare check needs a human click, the page shows a **Solve now** banner that opens the solver's browser (noVNC) inside the page.
 
 ### Fixes & Improvements
+* **Docker `PUID`/`PGID`**: the container now starts as root, remaps its user to `PUID`/`PGID` (default 1000), fixes ownership of `/data` and drops privileges with `gosu`, like linuxserver.io images. Works with plain `docker run -e PUID=... -e PGID=...`; compose's `user:` still works too. The image is published to `ghcr.io/daca11/silverspoon` on `docker-v*` tags.
 * **Shared download engine**: The queue, workers, extraction and scheduler moved out of the Qt window into `engine.py`, which the desktop app and the web app both use. The desktop app behaves as before. `SILVERSPOON_DATA_DIR` and `SILVERSPOON_DOWNLOAD_DIR` move the state files and the default save folder.
 
 ## [v1.6.0] - 2026-10-17

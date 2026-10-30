@@ -15,7 +15,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
       chromium 7zip fonts-liberation \
-      xvfb x11vnc novnc websockify supervisor \
+      xvfb x11vnc novnc websockify supervisor gosu \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -25,14 +25,16 @@ RUN pip install -r requirements-web.txt
 COPY engine.py cf_turnstile.py providers.py segmented.py extraction.py scheduler.py ./
 COPY webapp ./webapp
 COPY docker/supervisord.conf /etc/supervisor/conf.d/silverspoon.conf
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 
-# Runs as an unprivileged user (override with `user:` in compose to match the
-# owner of the bind-mounted folders).
+# The entrypoint starts as root, remaps this user to PUID/PGID (default 1000),
+# fixes ownership of the volumes and drops privileges with gosu. Setting
+# `user:` instead skips the remap and runs directly as that uid.
+ENV PUID=1000 PGID=1000
 RUN useradd --uid 1000 --create-home silverspoon \
  && mkdir -p /data /downloads /tmp/home /tmp/.X11-unix \
  && chmod 1777 /tmp/.X11-unix /tmp/home \
  && chown silverspoon /data /downloads
-USER silverspoon
 
 VOLUME ["/data", "/downloads"]
 EXPOSE 8080 6080
@@ -40,4 +42,5 @@ EXPOSE 8080 6080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
   CMD python -c "import urllib.request as u; u.urlopen('http://127.0.0.1:8080/api/state', timeout=4)"
 
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["supervisord", "-n", "-c", "/etc/supervisor/conf.d/silverspoon.conf"]
